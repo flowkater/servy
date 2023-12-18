@@ -10,12 +10,13 @@ defmodule ServyTest do
   end
 
   test "POST /bears" do
-    response = handle_request("POST", "/bears", "name=Baloo&type=Brown")
+    response = handle_request("POST", "/bears")
     assert String.contains?(response, "201")
     assert String.contains?(response, "Created")
     assert String.contains?(response, "Created")
     assert String.contains?(response, "Baloo")
     assert String.contains?(response, "Brown")
+    assert String.contains?(response, "application/x-www-form-urlencoded")
   end
 
   test "GET /wildthings" do
@@ -88,14 +89,42 @@ defmodule ServyTest do
     assert response1 == response2
   end
 
-  defp handle_request(method, path, body \\ "") do
+  defp handle_request("GET" = method, path) do
+    """
+    #{method} #{path} HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Content-Type: text/html
+    Accept: */*
+
+    """
+    |> Servy.Handler.handle()
+    |> log_response()
+  end
+
+  defp handle_request("DELETE" = method, path) do
+    """
+    #{method} #{path} HTTP/1.1
+    Host: example.com
+    User-Agent: ExampleBrowser/1.0
+    Content-Type: text/html
+    Accept: */*
+
+    """
+    |> Servy.Handler.handle()
+    |> log_response()
+  end
+
+  defp handle_request("POST" = method, path) do
     """
     #{method} #{path} HTTP/1.1
     Host: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 21
 
-    #{body}
+    name=Baloo&type=Brown
     """
     |> Servy.Handler.handle()
     |> log_response()

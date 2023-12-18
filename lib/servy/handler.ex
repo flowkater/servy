@@ -53,7 +53,7 @@ defmodule Servy.Handler do
     %{
       conv
       | status: 201,
-        resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]} "
+        resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}"
     }
   end
 
@@ -75,7 +75,7 @@ defmodule Servy.Handler do
   def format_response(%Conv{} = conv) do
     """
     HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: text/html
+    Content-Type: #{conv.headers["Content-Type"]}
     Content-Length: #{byte_size(conv.resp_body)}
 
     #{conv.resp_body}
