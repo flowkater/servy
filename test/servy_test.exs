@@ -9,6 +9,15 @@ defmodule ServyTest do
     assert String.contains?(response, "Teddy, Smokey, Paddington")
   end
 
+  test "POST /bears" do
+    response = handle_request("POST", "/bears", "name=Baloo&type=Brown")
+    assert String.contains?(response, "201")
+    assert String.contains?(response, "Created")
+    assert String.contains?(response, "Created")
+    assert String.contains?(response, "Baloo")
+    assert String.contains?(response, "Brown")
+  end
+
   test "GET /wildthings" do
     response = handle_request("GET", "/wildthings")
     assert String.contains?(response, "200")
@@ -79,13 +88,14 @@ defmodule ServyTest do
     assert response1 == response2
   end
 
-  defp handle_request(method, path) do
+  defp handle_request(method, path, body \\ "") do
     """
     #{method} #{path} HTTP/1.1
     Host: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
 
+    #{body}
     """
     |> Servy.Handler.handle()
     |> log_response()
